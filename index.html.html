@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just For You</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffe6f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            border: 3px dashed #ff99cc;
+        }
+        h1 {
+            color: #ff66b2;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-shadow: 1px 1px 2px rgba(255, 102, 178, 0.3);
+        }
+        p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .flower {
+            display: inline-block;
+            font-size: 30px;
+            margin: 0 5px;
+            animation: sway 3s infinite alternate;
+        }
+        @keyframes sway {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+        .button {
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 102, 178, 0.4);
+            font-weight: bold;
+        }
+        .button:hover {
+            transform: scale(1.05);
+            background-color: #ff3399;
+            box-shadow: 0 7px 20px rgba(255, 102, 178, 0.6);
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* Password Screen Styles */
+        .password-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            border: 3px dashed #ff99cc;
+            display: none;
+        }
+        
+        .password-input {
+            padding: 12px 20px;
+            font-size: 18px;
+            border: 2px solid #ff99cc;
+            border-radius: 15px;
+            width: 70%;
+            margin: 20px auto;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            outline: none;
+        }
+        
+        .password-input:focus {
+            border-color: #ff66b2;
+            box-shadow: 0 0 8px rgba(255, 102, 178, 0.4);
+        }
+        
+        .hint-text {
+            color: #ff66b2;
+            font-size: 16px;
+            margin-top: 15px;
+            font-style: italic;
+            min-height: 48px;
+        }
+        
+        .clue-container {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #fff9fc;
+            border-radius: 10px;
+            border: 1px solid #ffcce6;
+        }
+        
+        .clue {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .heart-float {
+            position: absolute;
+            font-size: 24px;
+            animation: float-up 4s ease-in infinite;
+            opacity: 0;
+        }
+        
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 0.7; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        
+        /* Success Screen Styles */
+        .success-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            border: 3px dashed #ff99cc;
+            display: none;
+            animation: pop-in 0.5s ease-out;
+        }
+        
+        @keyframes pop-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .image-container {
+            margin: 20px auto;
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .drive-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff66b2;
+            font-size: 20px;
+        }
+        
+        .blinking-text {
+            animation: blink 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff66b2;
+            opacity: 0.8;
+            animation: confetti-fall 4s ease-in infinite;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(calc(100vh + 100px)) rotate(720deg); opacity: 0; }
+        }
+        
+        .cloud {
+            position: absolute;
+            font-size: 50px;
+            color: white;
+            text-shadow: 0 0 10px #ccc;
+            animation: cloudFloat 30s linear infinite;
+            opacity: 0.7;
+            z-index: 0;
+        }
+        
+        @keyframes cloudFloat {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(calc(100vw + 100px)); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <h1>Halloo, Petchay! ☀️</h1>
+        <p>Ay sig maoy</p>
+        <div class="flower">🌸</div>
+        <div class="flower">🌺</div>
+        <div class="flower">🌷</div>
+        <button class="button" id="surpriseButton">E click ni! ✨</button>
+    </div>
+
+    <!-- Password Screen -->
+    <div class="password-container" id="passwordContainer">
+        <h1>🔒 Protected Surprise 🔒</h1>
+        <p>To unlock your special surprise, enter the secret password:</p>
+        
+        <input type="password" class="password-input" id="passwordInput" placeholder="What's the magic word?">
+        <button class="button" id="submitPassword">Unlock ✨</button>
+        
+        <div class="hint-text" id="hintText"></div>
+        
+        <div class="clue-container">
+            <p class="clue">Clue #1: Dili ni pagkaon, pero pirmi ko'g gana basta siya'y hisgutan.</p>
+            <p class="clue">Clue #2: Nagsugod sa tunog nga mura'g "psst" kung naay gwapa.</p>
+            <p class="clue">Clue #3: Walo ka letra. Dili "password123," promise.</p>
+        </div>
+    </div>
+
+    <!-- Success Screen with Google Drive Image -->
+    <div class="success-container" id="successContainer">
+        <h1>🎉 Surprise Unlocked! 🎉</h1>
+        <p>Just for you, my special one...</p>
+        
+        <div class="image-container">
+            <!-- Using iframe to display Google Drive image -->
+            <iframe class="drive-frame" src="https://drive.google.com/file/d/14j4l1NoL_PWc2x1vHaxJd1_-1WUazK15/preview" allowfullscreen></iframe>
+        </div>
+        
+        <div class="message">
+            <span class="blinking-text">You make my heart smile every single day! 💖</span>
+        </div>
+        
+        <p>Murag ni cold naman hahahahahha!</p>
+        <p id="randomCompliment"></p>
+        
+        <div class="flower">🌸</div>
+        <div class="flower">🌺</div>
+        <div class="flower">🌷</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start with original cute page
+            const correctPassword = "Shyralyn";
+            const wrongPasswordHints = [
+            "Hmm, not quite... maybe think of a name that’s always in the VIP section of my brain. 🧠✨",
+            "Oops! That’s not it. Try the name that somehow shows up in all my doodles. ✍️😅",
+            "So close! Think of the name that even auto-correct respects. 🤖📝",
+            "Wrong password… but 10/10 for effort and facial expressions! 😂",
+            "Not quite! The password has 8 letters and starts with ‘S’... just like a name I can’t seem to forget.",
+            "Try again! It rhymes with 'shy darlin’... and no, it's not 'pie marlin'. 🍰🐟",
+            "Nope! But here's a hint: It’s the name that could probably win a spelling bee without even trying. 🏆",
+            "That’s not it! But the password starts with the same letter as ‘Snacks’... and is just as irresistible. 😋"
+            ];
+            
+            const compliments = [
+                "Kaon tarung kay ma sister nya ka, ay sig diet ey! Ka gwapa ra nimo✨",
+                "Every moment with you is a treasure I cherish 💝",
+                "Ara oh smile pud diha🌹",
+                "Your laugh is my favorite sound in the whole world 🎵",
+                "You make my heart dance with joy every single day 💃",
+                "Being yours is the greatest blessing in my life 🙏",
+                "You're the reason I believe in magic ✨"
+            ];
+            
+            let passwordAttempts = 0;
+            
+            // Create background elements
+            createClouds();
+            
+            document.getElementById('surpriseButton').addEventListener('click', function() {
+                // Hide main container and show password screen
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('passwordContainer').style.display = 'block';
+            });
+            
+            // Function to create floating hearts
+            function createFloatingHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart-float';
+                heart.textContent = ['❤️', '💖', '💕', '💓', '💗'][Math.floor(Math.random() * 5)];
+                heart.style.left = Math.random() * 80 + 10 + '%';
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 4000);
+            }
+            
+            // Create occasional floating hearts
+            setInterval(createFloatingHeart, 2000);
+            
+            document.getElementById('submitPassword').addEventListener('click', checkPassword);
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            function checkPassword() {
+                const passwordInput = document.getElementById('passwordInput');
+                const enteredPassword = passwordInput.value;
+                const hintText = document.getElementById('hintText');
+                
+                if (enteredPassword.toLowerCase() === correctPassword.toLowerCase()) {
+                    // Password correct - show success screen with Google Drive image
+                    document.getElementById('passwordContainer').style.display = 'none';
+                    showSuccessScreen();
+                } else {
+                    // Password incorrect - show hint
+                    passwordAttempts++;
+                    const randomHint = wrongPasswordHints[Math.floor(Math.random() * wrongPasswordHints.length)];
+                    hintText.textContent = randomHint;
+                    
+                    // Shake the input
+                    passwordInput.classList.add('shake');
+                    setTimeout(() => {
+                        passwordInput.classList.remove('shake');
+                    }, 500);
+                    
+                    // If many attempts, give stronger hint
+                    if (passwordAttempts >= 5) {
+                        hintText.innerHTML = "Still trying? You're so persistent! 😘<br>Big hint: My password is your first name! ❤️";
+                    }
+                }
+            }
+            
+            function showSuccessScreen() {
+                // Show the success container
+                document.getElementById('successContainer').style.display = 'block';
+                
+                // Change background color
+                document.body.style.backgroundColor = '#ffcce6';
+                
+                // Display a random compliment
+                const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+                document.getElementById('randomCompliment').textContent = randomCompliment;
+                
+                // Create confetti effect
+                createConfetti();
+                
+                // Create more floating hearts for celebration
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(createFloatingHeart, i * 300);
+                }
+            }
+            
+            function createConfetti() {
+                const colors = ['#ff66b2', '#ff99cc', '#ffcce6', '#ff3399', '#ffb3d9', '#ff80bf'];
+                
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+            
+            function createClouds() {
+                const cloudEmojis = ['☁️', '⛅', '💭'];
+                for (let i = 0; i < 5; i++) {
+                    const cloud = document.createElement('div');
+                    cloud.textContent = cloudEmojis[Math.floor(Math.random() * cloudEmojis.length)];
+                    cloud.classList.add('cloud');
+                    cloud.style.top = Math.random() * 50 + 'vh';
+                    cloud.style.animationDuration = (30 + Math.random() * 20) + 's';
+                    cloud.style.animationDelay = Math.random() * 10 + 's';
+                    document.body.appendChild(cloud);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
