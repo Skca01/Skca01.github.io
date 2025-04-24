@@ -227,6 +227,82 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
+        
+        /* New styles for the compliment carousel */
+        .compliment-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff9fc;
+            border-radius: 15px;
+            border: 2px solid #ff99cc;
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .compliment-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .compliment-visible {
+            opacity: 1;
+        }
+        
+        .read-indicator {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff66b2;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(255, 102, 178, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+        }
+        
+        .compliment-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .nav-button {
+            background-color: #ff99cc;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: #ff66b2;
+            transform: scale(1.05);
+        }
+        
+        .compliment-counter {
+            font-size: 14px;
+            color: #ff66b2;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -271,7 +347,18 @@
         </div>
         
         <p>Murag ni cold naman hahahahahha!</p>
-        <p id="randomCompliment"></p>
+        
+        <!-- New compliment carousel -->
+        <div class="compliment-container">
+            <div class="read-indicator">❤️ Please read me! ❤️</div>
+            <div class="compliment-text" id="complimentText"></div>
+            
+            <div class="compliment-navigation">
+                <button class="nav-button" id="prevCompliment">Previous</button>
+                <button class="nav-button" id="nextCompliment">Next</button>
+            </div>
+            <div class="compliment-counter" id="complimentCounter"></div>
+        </div>
         
         <div class="flower">🌸</div>
         <div class="flower">🌺</div>
@@ -283,27 +370,29 @@
             // Start with original cute page
             const correctPassword = "Shyralyn";
             const wrongPasswordHints = [
-            "Hmm, not quite... maybe think of a name that’s always in the VIP section of my brain. 🧠✨",
-            "Oops! That’s not it. Try the name that somehow shows up in all my doodles. ✍️😅",
+            "Hmm, not quite... maybe think of a name that's always in the VIP section of my brain. 🧠✨",
+            "Oops! That's not it. Try the name that somehow shows up in all my doodles. ✍️😅",
             "So close! Think of the name that even auto-correct respects. 🤖📝",
             "Wrong password… but 10/10 for effort and facial expressions! 😂",
-            "Not quite! The password has 8 letters and starts with ‘S’... just like a name I can’t seem to forget.",
-            "Try again! It rhymes with 'shy darlin’... and no, it's not 'pie marlin'. 🍰🐟",
-            "Nope! But here's a hint: It’s the name that could probably win a spelling bee without even trying. 🏆",
-            "That’s not it! But the password starts with the same letter as ‘Snacks’... and is just as irresistible. 😋"
+            "Not quite! The password has 8 letters and starts with 'S'... just like a name I can't seem to forget.",
+            "Try again! It rhymes with 'shy darlin'... and no, it's not 'pie marlin'. 🍰🐟",
+            "Nope! But here's a hint: It's the name that could probably win a spelling bee without even trying. 🏆",
+            "That's not it! But the password starts with the same letter as 'Snacks'... and is just as irresistible. 😋"
             ];
             
             const compliments = [
-                "Kaon tarung kay ma sister nya ka, ay sig diet ey! Ka gwapa ra nimo✨",
-                "Every moment with you is a treasure I cherish 💝",
-                "Ara oh smile pud diha🌹",
-                "Your laugh is my favorite sound in the whole world 🎵",
-                "You make my heart dance with joy every single day 💃",
-                "Being yours is the greatest blessing in my life 🙏",
-                "You're the reason I believe in magic ✨"
+                "Pwede mo parking? sa imong bakanti nga kasing.",
+                "Ang akung mata nangita sa imoha ana siya EYE miss you daw.",
+                "Akong gugma kanimo murag biko, naay sagol latik pero way sagol atik",
+                "Akala ko sa H nagsimula ang happiness sa U pala",
+                "'Finding Nemo' kay ikaw ra akong gusto.",
+                "Walay koy issue pero imissue",
+                "Kung and tagalog sa kanding, kay lambing pasulaya pudta anang imung lambing✨",
+                "Mao rato madaot nya ta kakatawa sig search hahahhaha"
             ];
             
             let passwordAttempts = 0;
+            let currentComplimentIndex = 0;
             
             // Create background elements
             createClouds();
@@ -372,9 +461,13 @@
                 // Change background color
                 document.body.style.backgroundColor = '#ffcce6';
                 
-                // Display a random compliment
-                const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
-                document.getElementById('randomCompliment').textContent = randomCompliment;
+                // Initialize the compliment carousel
+                showCompliment(0);
+                updateComplimentCounter();
+                
+                // Add event listeners for the compliment navigation
+                document.getElementById('nextCompliment').addEventListener('click', nextCompliment);
+                document.getElementById('prevCompliment').addEventListener('click', prevCompliment);
                 
                 // Create confetti effect
                 createConfetti();
@@ -383,6 +476,40 @@
                 for (let i = 0; i < 10; i++) {
                     setTimeout(createFloatingHeart, i * 300);
                 }
+            }
+            
+            function showCompliment(index) {
+                // Make sure index is within bounds
+                if (index < 0) index = compliments.length - 1;
+                if (index >= compliments.length) index = 0;
+                
+                currentComplimentIndex = index;
+                
+                // Get the compliment text element
+                const complimentText = document.getElementById('complimentText');
+                
+                // Fade out
+                complimentText.classList.remove('compliment-visible');
+                
+                // Change text and fade in after a short delay
+                setTimeout(() => {
+                    complimentText.textContent = compliments[currentComplimentIndex];
+                    complimentText.classList.add('compliment-visible');
+                    updateComplimentCounter();
+                }, 500);
+            }
+            
+            function nextCompliment() {
+                showCompliment(currentComplimentIndex + 1);
+            }
+            
+            function prevCompliment() {
+                showCompliment(currentComplimentIndex - 1);
+            }
+            
+            function updateComplimentCounter() {
+                document.getElementById('complimentCounter').textContent = 
+                    `${currentComplimentIndex + 1} of ${compliments.length}`;
             }
             
             function createConfetti() {
